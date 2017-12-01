@@ -3,6 +3,10 @@ var VirtualJoystick	= function(opts)
 	opts			= opts			|| {};
 	this._container		= opts.container	|| document.body;
 	this._strokeStyle	= opts.strokeStyle	|| 'cyan';
+	this._baseRadius	= Math.abs( opts.baseRadius ) || 126;
+	this._stickRadius	= Math.abs( opts.stickRadius ) || 86;
+	this._baseStroke	= Math.abs( ~~opts.baseStroke ) || 2;
+	this._stickStroke	= Math.abs( ~~opts.stickStroke ) || 4;
 	this._stickEl		= opts.stickElement	|| this._buildJoystickStick();
 	this._baseEl		= opts.baseElement	|| this._buildJoystickBase();
 	this._mouseSupport	= opts.mouseSupport !== undefined ? opts.mouseSupport : false;
@@ -10,7 +14,7 @@ var VirtualJoystick	= function(opts)
 	this._baseX		= this._stickX = opts.baseX || 0;
 	this._baseY		= this._stickY = opts.baseY || 0;
 	this._limitStickTravel	= opts.limitStickTravel || false;
-	this._stickRadius	= opts.stickRadius !== undefined ? opts.stickRadius : 100;
+	this._travelRadius	= Math.abs( opts.travelRadius )|| 100;
 	this._useCssTransform	= opts.useCssTransform !== undefined ? opts.useCssTransform : false;
 
 	this._container.style.position	= "relative";
@@ -175,17 +179,17 @@ VirtualJoystick.prototype._onDown	= function(x, y)
 		var deltaX	= this.deltaX();
 		var deltaY	= this.deltaY();
 		var stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
-		if(stickDistance > this._stickRadius){
+		if(stickDistance > this._travelRadius){
 			var stickNormalizedX = deltaX / stickDistance;
 			var stickNormalizedY = deltaY / stickDistance;
 
-			this._stickX = stickNormalizedX * this._stickRadius + this._baseX;
-			this._stickY = stickNormalizedY * this._stickRadius + this._baseY;
+			this._stickX = stickNormalizedX * this._travelRadius + this._baseX;
+			this._stickY = stickNormalizedY * this._travelRadius + this._baseY;
 		}
 	}
 
 	this._stickEl.style.display	= "";
-	this._move(this._stickEl.style, (this._stickX - this._stickEl.width /2), (this._stickY - this._stickEl.height/2));
+	this._move( this._stickEl.style, ( this._stickX - this._stickEl.width * .05 ), ( this._stickY - this._stickEl.height * .05 ) );
 }
 
 VirtualJoystick.prototype._onMove	= function(x, y)
@@ -198,12 +202,12 @@ VirtualJoystick.prototype._onMove	= function(x, y)
 			var deltaX	= this.deltaX();
 			var deltaY	= this.deltaY();
 			var stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
-			if(stickDistance > this._stickRadius){
+			if(stickDistance > this._travelRadius){
 				var stickNormalizedX = deltaX / stickDistance;
 				var stickNormalizedY = deltaY / stickDistance;
 
-				this._stickX = stickNormalizedX * this._stickRadius + this._baseX;
-				this._stickY = stickNormalizedY * this._stickRadius + this._baseY;
+				this._stickX = stickNormalizedX * this._travelRadius + this._baseX;
+				this._stickY = stickNormalizedY * this._travelRadius + this._baseY;
 			}
 		}
 
@@ -320,21 +324,21 @@ VirtualJoystick.prototype._onTouchMove	= function(event)
  */
 VirtualJoystick.prototype._buildJoystickBase	= function()
 {
-	var canvas	= document.createElement( 'canvas' );
-	canvas.width	= 126;
-	canvas.height	= 126;
+	var canvas = document.createElement( 'canvas' );
+	canvas.width = this._baseRadius * 2;
+	canvas.height = this._baseRadius * 2;
 
-	var ctx		= canvas.getContext('2d');
+	var ctx = canvas.getContext('2d');
 	ctx.beginPath();
 	ctx.strokeStyle = this._strokeStyle;
-	ctx.lineWidth	= 6;
-	ctx.arc( canvas.width/2, canvas.width/2, 40, 0, Math.PI*2, true);
+	ctx.lineWidth = this._stickStroke;
+	ctx.arc( this._baseRadius, this._baseRadius, this._stickRadius - ( this._stickStroke * 0.5 ), 0, Math.PI * 2, true );
 	ctx.stroke();
 
 	ctx.beginPath();
 	ctx.strokeStyle	= this._strokeStyle;
-	ctx.lineWidth	= 2;
-	ctx.arc( canvas.width/2, canvas.width/2, 60, 0, Math.PI*2, true);
+	ctx.lineWidth = this._baseStroke;
+	ctx.arc( this._baseRadius, this._baseRadius, this._baseRadius - ( this._baseStroke * 0.5 ), 0, Math.PI * 2, true );
 	ctx.stroke();
 
 	return canvas;
@@ -343,16 +347,15 @@ VirtualJoystick.prototype._buildJoystickBase	= function()
 /**
  * build the canvas for joystick stick
  */
-VirtualJoystick.prototype._buildJoystickStick	= function()
-{
-	var canvas	= document.createElement( 'canvas' );
-	canvas.width	= 86;
-	canvas.height	= 86;
-	var ctx		= canvas.getContext('2d');
+VirtualJoystick.prototype._buildJoystickStick = function() {
+	var canvas = document.createElement( 'canvas' );
+	canvas.width = this._stickRadius * 2;
+	canvas.height = this._stickRadius * 2;
+	var ctx = canvas.getContext( '2d' );
 	ctx.beginPath();
-	ctx.strokeStyle	= this._strokeStyle;
-	ctx.lineWidth	= 6;
-	ctx.arc( canvas.width/2, canvas.width/2, 40, 0, Math.PI*2, true);
+	ctx.strokeStyle = this._strokeStyle;
+	ctx.lineWidth = this._stickStroke;
+	ctx.arc( this._stickRadius, this._stickRadius, this._stickRadius - ( this._stickStroke * 0.5 ), 0, Math.PI * 2, true);
 	ctx.stroke();
 	return canvas;
 }
