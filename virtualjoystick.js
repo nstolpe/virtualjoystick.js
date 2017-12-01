@@ -7,20 +7,22 @@ var VirtualJoystick	= function(opts)
 	this._baseEl		= opts.baseElement	|| this._buildJoystickBase();
 	this._mouseSupport	= opts.mouseSupport !== undefined ? opts.mouseSupport : false;
 	this._stationaryBase	= opts.stationaryBase || false;
-	this._baseX		= this._stickX = opts.baseX || 0
-	this._baseY		= this._stickY = opts.baseY || 0
-	this._limitStickTravel	= opts.limitStickTravel || false
-	this._stickRadius	= opts.stickRadius !== undefined ? opts.stickRadius : 100
-	this._useCssTransform	= opts.useCssTransform !== undefined ? opts.useCssTransform : false
+	this._baseX		= this._stickX = opts.baseX || 0;
+	this._baseY		= this._stickY = opts.baseY || 0;
+	this._limitStickTravel	= opts.limitStickTravel || false;
+	this._travelRadius	= opts.travelRadius !== undefined ? opts.travelRadius : 100;
+	this._stickRadius = opts.stickRadius || 43;
+	this._baseRadius = opts.baseRadius || 163;
+	this._useCssTransform	= opts.useCssTransform !== undefined ? opts.useCssTransform : false;
 
-	this._container.style.position	= "relative"
+	this._container.style.position	= "relative";
 
-	this._container.appendChild(this._baseEl)
-	this._baseEl.style.position	= "absolute"
-	this._baseEl.style.display	= "none"
-	this._container.appendChild(this._stickEl)
-	this._stickEl.style.position	= "absolute"
-	this._stickEl.style.display	= "none"
+	this._container.appendChild(this._baseEl);
+	this._baseEl.style.position	= "absolute";
+	this._baseEl.style.display	= "none";
+	this._container.appendChild(this._stickEl);
+	this._stickEl.style.position	= "absolute";
+	this._stickEl.style.display	= "none";
 
 	this._pressed	= false;
 	this._touchIdx	= null;
@@ -175,12 +177,12 @@ VirtualJoystick.prototype._onDown	= function(x, y)
 		var deltaX	= this.deltaX();
 		var deltaY	= this.deltaY();
 		var stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
-		if(stickDistance > this._stickRadius){
+		if(stickDistance > this._travelRadius){
 			var stickNormalizedX = deltaX / stickDistance;
 			var stickNormalizedY = deltaY / stickDistance;
 			
-			this._stickX = stickNormalizedX * this._stickRadius + this._baseX;
-			this._stickY = stickNormalizedY * this._stickRadius + this._baseY;
+			this._stickX = stickNormalizedX * this._travelRadius + this._baseX;
+			this._stickY = stickNormalizedY * this._travelRadius + this._baseY;
 		} 	
 	}
 	
@@ -198,12 +200,12 @@ VirtualJoystick.prototype._onMove	= function(x, y)
 			var deltaX	= this.deltaX();
 			var deltaY	= this.deltaY();
 			var stickDistance = Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
-			if(stickDistance > this._stickRadius){
+			if(stickDistance > this._travelRadius){
 				var stickNormalizedX = deltaX / stickDistance;
 				var stickNormalizedY = deltaY / stickDistance;
 			
-				this._stickX = stickNormalizedX * this._stickRadius + this._baseX;
-				this._stickY = stickNormalizedY * this._stickRadius + this._baseY;
+				this._stickX = stickNormalizedX * this._travelRadius + this._baseX;
+				this._stickY = stickNormalizedY * this._travelRadius + this._baseY;
 			} 		
 		}
 		
@@ -321,8 +323,8 @@ VirtualJoystick.prototype._onTouchMove	= function(event)
 VirtualJoystick.prototype._buildJoystickBase	= function()
 {
 	var canvas	= document.createElement( 'canvas' );
-	canvas.width	= 126;
-	canvas.height	= 126;
+	canvas.width	= this.baseRadius * 2;
+	canvas.height	= this.baseRadius * 2;
 	
 	var ctx		= canvas.getContext('2d');
 	ctx.beginPath(); 
@@ -346,8 +348,8 @@ VirtualJoystick.prototype._buildJoystickBase	= function()
 VirtualJoystick.prototype._buildJoystickStick	= function()
 {
 	var canvas	= document.createElement( 'canvas' );
-	canvas.width	= 86;
-	canvas.height	= 86;
+	canvas.width	= this._stickRadius * 2;
+	canvas.height	= this._stickRadius * 2;
 	var ctx		= canvas.getContext('2d');
 	ctx.beginPath(); 
 	ctx.strokeStyle	= this._strokeStyle; 
