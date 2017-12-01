@@ -1,0 +1,28 @@
+{
+  "name": "virtualjoystick.js",
+  "version": "0.0.1",
+  "description": "NPM version of [virtualjoystick.js](https://github.com/jeromeetienne/virtualjoystick.js) by @jeromeetienne",
+  "main": "virtualjoystick.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nstolpe/virtualjoystick.js.git"
+  },
+  "keywords": [
+    "joystick",
+    "touch",
+    "virtual",
+    "input"
+  ],
+  "author": "nstolpe",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nstolpe/virtualjoystick.js/issues"
+  },
+  "homepage": "https://github.com/nstolpe/virtualjoystick.js#readme"
+}
